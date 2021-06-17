@@ -57,10 +57,11 @@ class sim:
     def settle(self):
         change = True
         iter = 0
+        nands = sorted(NANDS)
         while change:
             iter =+ 1
             change = False
-            for id in sorted(NANDS):
+            for id in nands:
                 n = NANDS[id]
                 prev = WIRES[n['c']] 
                 cur = int(not (WIRES[n['a']] & WIRES[n['b']]))

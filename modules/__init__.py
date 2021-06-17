@@ -12,3 +12,5 @@ from .jadd import *
 from .jcmp import *
 from .jmem import *
 from .jbyte import *
+from .jenabler import *
+from .jdecoderN import *
