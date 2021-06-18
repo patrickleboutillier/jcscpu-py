@@ -7,6 +7,7 @@ from .jbuf import *
 from .jandN import *
 from .jor import *
 from .jorN import *
+from .jorE import *
 from .jxor import *
 from .jadd import *
 from .jcmp import *
