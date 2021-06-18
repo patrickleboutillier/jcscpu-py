@@ -10,7 +10,7 @@ class jALU:
         bdec = bus()
         jdecoderN(bops, bdec) 
   
-        bcsE = busE(bcs)
+        bcsE = busE(bcs, 7)
         bxor, bor, band, bnot, bshl, bshr, badd = bus(), bus(), bus(), bus(), bus(), bus(), bus()
         jxorer.jxorer(bas, bbs, bxor, weqo, walo) 
         jenabler(bxor, bdec[1], bcsE.new_bus())

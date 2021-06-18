@@ -3,8 +3,8 @@ from modules import jorN, jbuf
 
 
 class jorE:
-    def __init__(self, wo):
-        self._wires = bus(8)
+    def __init__(self, wo, max=6):
+        self._wires = bus(max)
         self._orN = jorN(self._wires, wo)
         self._n = 0
 	
@@ -14,12 +14,12 @@ class jorE:
 
 
 class busE:
-    def __init__(self, bos):
+    def __init__(self, bos, max=8):
         n = len(bos)
-        self._buses = [ bus(n) for _ in range(8) ]
+        self._buses = [ bus(n) for _ in range(max) ]
         for j in range(n):
-            ore = jorE(bos[j])
-            for k in range(8):
+            ore = jorE(bos[j], max)
+            for k in range(max):
                 ore.add_wire(self._buses[k][j])
         self._n = 0
 
