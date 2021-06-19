@@ -3,14 +3,21 @@ from modules import jorN, jbuf
 
 
 class jorE:
-    def __init__(self, wo, max=6):
+    def __init__(self, wo=wire(), max=6):
+        self._out = wo
         self._wires = bus(max)
         self._orN = jorN(self._wires, wo)
         self._n = 0
 	
+    def out(self):
+        return self._out
+
     def add_wire(self, w):
         jbuf(w, self._wires[self._n])
         self._n += 1 
+
+    def assign(self, w):
+        self.add_wire(w)
 
 
 class busE:
