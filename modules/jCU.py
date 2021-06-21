@@ -3,7 +3,7 @@ from modules import jdecoderN, jorE, jand, jor, jnot, jandN, jorN, jbuf
 
 
 class jCU:
-    def __init__(self, clk, clkd, clke, clks, stp_bus, flags_bus, ir_bus, 
+    def __init__(self, clke, clks, stp_bus, flags_bus, ir_bus, 
         alu_op, alu_ena_ci, flags_s, tmp_s, bus_bit1, acc_s, acc_e, 
         r0_s, r0_e, r1_s, r1_e, r2_s, r2_e, r3_s, r3_e, 
         ram_mar_s, ram_s, ram_e, iar_s, iar_e, ir_s,
@@ -33,9 +33,12 @@ class jCU:
         # - Load the instruction from RAM into IR
         # - Increment the IAR from ACC
         bus_bit1_wor.assign(stp_bus[0])
+        iar_ena_wor.assign(stp_bus[0])
         ram_mar_set_wor.assign(stp_bus[0]) 
         acc_set_wor.assign(stp_bus[0]) 
+        ram_ena_wor.assign(stp_bus[1])
         ir_set_wor.assign(stp_bus[1]) 
+        acc_ena_wor.assign(stp_bus[2]) 
         iar_set_wor.assign(stp_bus[2]) 
 
         # Then, we set up the parts that are required to actually implement instructions, i.e.
@@ -55,20 +58,20 @@ class jCU:
         edecoa, edecob = bus(4), bus(4)
         r0_wora, r0_worb = wire(), wire()
         jor(r0_wora, r0_worb, r0_e) 
-        jandN(clke, rega_e, edecoa[3], r0_wora) 
-        jandN(clke, regb_e, edecob[3], r0_worb) 
+        jandN([clke, rega_e, edecoa[3]], r0_wora) 
+        jandN([clke, regb_e, edecob[3]], r0_worb) 
         r1_wora, r1_worb  = wire(), wire()
         jor(r1_wora, r1_worb, r1_e) 
-        jandN(clke, rega_e, edecoa[2], r1_wora) 
-        jandN(clke, regb_e, edecob[2], r1_worb) 
+        jandN([clke, rega_e, edecoa[2]], r1_wora) 
+        jandN([clke, regb_e, edecob[2]], r1_worb) 
         r2_wora, r2_worb  = wire(), wire()
         jor(r2_wora, r2_worb, r2_e) 
-        jandN(clke, rega_e, edecoa[1], r2_wora) 
-        jandN(clke, regb_e, edecob[1], r2_worb) 
+        jandN([clke, rega_e, edecoa[1]], r2_wora) 
+        jandN([clke, regb_e, edecob[1]], r2_worb) 
         r3_wora, r3_worb  = wire(), wire()
         jor(r3_wora, r3_worb, r3_e) 
-        jandN(clke, rega_e, edecoa[0], r3_wora) 
-        jandN(clke, regb_e, edecob[0], r3_worb) 
+        jandN([clke, rega_e, edecoa[0]], r3_wora) 
+        jandN([clke, regb_e, edecob[0]], r3_worb) 
 
         jdecoderN([ir_bus[4], ir_bus[5]], edecoa)
         jdecoderN([ir_bus[6], ir_bus[7]], edecob)
@@ -77,7 +80,7 @@ class jCU:
         notalu = wire()
         jnot(ir_bus[0], notalu)
         idecbus = bus(8)
-        jdecoderN(3, 8, ir_bus[1:3], idecbus)
+        jdecoderN(ir_bus[1:4], idecbus)
         for j in range(8):
             jand (notalu, idecbus[7-j], inst_bus[j])
             
@@ -102,6 +105,7 @@ class jCU:
 
         wnotcmp, aa3 = wire(), wire()
         jandN([stp_bus[5], ir_bus[0], wnotcmp], aa3)
+        acc_ena_wor.assign(aa3) 
         regb_set_wor.assign(aa3)
 
         # Operation selector
@@ -136,15 +140,18 @@ class jCU:
         d1 = wire()
         jand(stp_bus[3], inst_bus[2], d1)
         bus_bit1_wor.assign(d1)
+        iar_ena_wor.assign(d1)
         ram_mar_set_wor.assign(d1)
         acc_set_wor.assign(d1)
 
         d2 = wire()
         jand(stp_bus[4], inst_bus[2], d2)
+        ram_ena_wor.assign(d2)
         regb_set_wor.assign(d2)
 
         d3 = wire()
         jand(stp_bus[5], inst_bus[2], d3)
+        acc_ena_wor.assign(d3) 
         iar_set_wor.assign(d3)  
 
         # CLF INSTRUCTIONS
@@ -186,22 +193,27 @@ class jCU:
         # JUMP
         j1, j2 = wire(), wire()
         jand(stp_bus[3], inst_bus[4], j1)
+        iar_ena_wor.assign(j1)
         ram_mar_set_wor.assign(j1)
         jand(stp_bus[4], inst_bus[4], j2)
+        ram_ena_wor.assign(j2)
         iar_set_wor.assign(j2)
 
         # JUMPIF
         ji1 = wire()
         jand(stp_bus[3], inst_bus[5], ji1)
         bus_bit1_wor.assign(ji1)
+        iar_ena_wor.assign(ji1)
         ram_mar_set_wor.assign(ji1)
         acc_set_wor.assign(ji1)
         ji2 = wire()
         jand(stp_bus[4], inst_bus[5], ji2)
+        acc_ena_wor.assign(ji2) 
         iar_set_wor.assign(ji2)
 
         ji3, jflago = wire(), wire()
         jandN([stp_bus[5], inst_bus[5], jflago], ji3)
+        ram_ena_wor.assign(ji3)
         iar_set_wor.assign(ji3)
 
         jfbus = bus(4)
@@ -213,4 +225,4 @@ class jCU:
 		
 
 if __name__ == "__main__":
-  null = wire("null")
+    null = wire("null")

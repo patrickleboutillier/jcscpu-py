@@ -3,7 +3,8 @@ from modules import jorN, jbuf
 
 
 class jorE:
-    def __init__(self, wo=wire(), max=6):
+    def __init__(self, wo=None, max=6):
+        wo = wire() if wo is None else wo
         self._out = wo
         self._wires = bus(max)
         self._orN = jorN(self._wires, wo)
@@ -29,6 +30,7 @@ class busE:
             for k in range(max):
                 ore.add_wire(self._buses[k][j])
         self._n = 0
+        self._out = bos
 
     def add_bus(self, bis):
         for j in range(len(bis)):
@@ -39,6 +41,9 @@ class busE:
         b = bus(n, label)
         self.add_bus(b)
         return b 
+
+    def out(self):
+        return self._out
 
 
 if __name__ == "__main__":

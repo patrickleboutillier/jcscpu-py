@@ -14,12 +14,6 @@ class wire:
         wire._cnt += 1
         WIRES[self._id] = self
 
-    def assign(self, other):
-        self._assigned = True
-        self._init = other._init
-        # self._label = other._label
-        self._id = other._id
-
 
 def bus(n=8, label=""):
     ret = []

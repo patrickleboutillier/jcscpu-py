@@ -2,7 +2,7 @@ import sys
 
 WIRES = {}
 LABELS = {}
-NANDS = {}
+NANDS = []
 TESTS = {}
 
 
@@ -11,16 +11,17 @@ class sim:
         for line in sys.stdin:
             args = line.rstrip().split()
             verb = args.pop(0)
-            id = int(args.pop(0))
 
             if verb == 'WIRE':
+                id = int(args.pop(0))
                 WIRES[id] = int(args[0])
                 if len(args) > 1:
                     LABELS[args[1]] = id
             elif verb == 'NAND':
                 [a, b, c] = args
-                NANDS[id] = { 'a': int(a), 'b': int(b), 'c': int(c) } 
+                NANDS.append({ 'a': int(a), 'b': int(b), 'c': int(c) })
             elif verb == 'TEST':
+                id = int(args.pop(0))
                 ins = {}
                 outs = {}
                 for i in args[0].rstrip().split(','):
@@ -57,17 +58,16 @@ class sim:
     def settle(self):
         change = True
         iter = 0
-        nands = sorted(NANDS)
         while change:
             iter =+ 1
             change = False
-            for id in nands:
-                n = NANDS[id]
+            for n in NANDS:
                 prev = WIRES[n['c']] 
                 cur = int(not (WIRES[n['a']] & WIRES[n['b']]))
                 if cur != prev:
                     WIRES[n['c']] = cur 
-                    change = True                     
+                    change = True         
+                    # print("wire {}: {} -> {}".format(n['c'], prev, cur))
         return iter
 
 
