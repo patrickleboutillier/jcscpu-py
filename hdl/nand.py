@@ -19,8 +19,10 @@ struct nand {
 }
 
     """)
-    print("PROGMEM nand NANDS[] = {")
+    print("PROGMEM const word NANDS[] = {")
+    cnt = 0
     for n in NANDS:
         # print('NAND {} {} {}'.format(n._a._id, n._b._id, n._c._id))
-        print('  (nand){{{}, {}, {}}},'.format(n._a._id, n._b._id, n._c._id))
-    print("} ;")
+        print('\t{}, {}, {},'.format(n._a._id, n._b._id, n._c._id))
+        cnt += 3
+    print("}} ;\n\n\n#define NANDS_SIZE\t{}".format(cnt))
