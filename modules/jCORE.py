@@ -41,9 +41,9 @@ class jCORE:
         
         acc_s, acc_e, rst_acc_s = wire(), wire(), wire()
         jor(reset, acc_s, rst_acc_s)
-        jregister.jregister(alu_bus, rst_acc_s, acc_e, core_busE.new_bus(8, "acc_out"))
+        jregister.jregister(alu_bus, rst_acc_s, acc_e, core_busE.new_bus())
 
-        alu_ena_ci, wco = wire(), wire("wco")
+        alu_ena_ci, wco = wire(), wire()
         jmem(flags_bus[0], rst_tmp_s, wco)
         jand(wco, alu_ena_ci, alu_ci)
 

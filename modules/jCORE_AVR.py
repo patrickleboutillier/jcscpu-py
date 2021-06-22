@@ -16,8 +16,7 @@ class jCORE_AVR:
 
         core_busE = busE(buso) 
   
-        r0_s, r0_e, r1_s, r1_e, r2_s, r2_e, r3_s, r3_e = map(wire, 
-            ["r0_s", "r0_e", "r1_s", "r1_e", "r2_s", "r2_e", "r3_s", "r3_e"])
+        r0_s, r0_e, r1_s, r1_e, r2_s, r2_e, r3_s, r3_e = [wire() for x in range(8)]
         rst_r0_s, rst_r1_s, rst_r2_s, rst_r3_s = wire(), wire(), wire(), wire()
         jor(reset, r0_s, rst_r0_s)
         jregister.jregister(busi, rst_r0_s, r0_e, core_busE.new_bus())
@@ -46,9 +45,9 @@ class jCORE_AVR:
         
         acc_s, acc_e, rst_acc_s = wire(), wire(), wire()
         jor(reset, acc_s, rst_acc_s)
-        jregister.jregister(alu_bus, rst_acc_s, acc_e, core_busE.new_bus(8, "acc_out"))
+        jregister.jregister(alu_bus, rst_acc_s, acc_e, core_busE.new_bus())
 
-        alu_ena_ci, wco = wire(), wire("wco")
+        alu_ena_ci, wco = wire(), wire(q)
         jmem(flags_bus[0], rst_tmp_s, wco)
         jand(wco, alu_ena_ci, alu_ci)
 

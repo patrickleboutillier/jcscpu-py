@@ -1,3 +1,4 @@
+import re
 
 
 WIRES = {}
@@ -26,10 +27,29 @@ def bus(n=8, label=""):
 
 
 def dump_wires():
+    print("""
+#include <Arduino.h>
+
+
+byte WIRES[512] = {} ;
+
+""")
     for i in sorted(WIRES):
         w = WIRES[i]
         if not w._assigned:
-            print('WIRE {} {} {}'.format(w._id, w._init, w._label))
+            if w._label != "":
+                label = re.sub(r'\[(\d+)\]', r'_\1', w._label)
+                print('#define {}\t{}'.format(label, w._id))
+    
+    print("""
+
+void hdl_wire_init(){""")
+    for i in sorted(WIRES):
+        w = WIRES[i]
+        if not w._assigned:
+            if w._init != 0:
+                print('\tbitSet(WIRES[{0} / 8], {0} % 8]) ;'.format(w._id))
+    print("}")
 
 
 wire.GND = wire("GND")
