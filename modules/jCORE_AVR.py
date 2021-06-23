@@ -1,20 +1,20 @@
 from hdl import *
 from modules import jand, jor, busE, jmem
 import modules.jclock as jclock, modules.jstepper as jstepper, modules.jregister as jregister, modules.jbus1 as jbus1
-import modules.jALU as jALU, modules.jCU as jCU, modules.jRAM as jRAM
+import modules.jALU as jALU, modules.jCU as jCU
 
 
 class jCORE_AVR:
     def __init__(self, reset, clk, clkd,
         busi, buso, ram_mar_s, ram_s, ram_e,
         io_s, io_e, io_io, io_da, halt):
-    
+
+        core_busE = busE(buso) 
+
         clke, clks = map(wire, ["clke", "clks"])
         jclock.jclock(clk, clkd, clke, clks)
         stp_bus = bus(6, "stp_bus")
         jstepper.jstepper(reset, clk, stp_bus)
-
-        core_busE = busE(buso) 
   
         r0_s, r0_e, r1_s, r1_e, r2_s, r2_e, r3_s, r3_e = map(wire, 
             ["r0_s", "r0_e", "r1_s", "r1_e", "r2_s", "r2_e", "r3_s", "r3_e"])
@@ -46,14 +46,14 @@ class jCORE_AVR:
         
         acc_s, acc_e, rst_acc_s = wire(), wire(), wire()
         jor(reset, acc_s, rst_acc_s)
-        jregister.jregister(alu_bus, rst_acc_s, acc_e, core_busE.new_bus(8, "acc_out"))
+        jregister.jregister(alu_bus, rst_acc_s, acc_e, core_busE.new_bus())
 
-        alu_ena_ci, wco = wire(), wire("wco")
+        alu_ena_ci, wco = wire(), wire()
         jmem(flags_bus[0], rst_tmp_s, wco)
         jand(wco, alu_ena_ci, alu_ci)
 
-        iar_s, iar_e, ir_s, rst_iar_s, rst_ir_s = wire(), wire(), wire(), wire(), wire()
-        ir_bus = bus(8)
+        iar_s, iar_e, ir_s, rst_iar_s, rst_ir_s = wire("iar_s"), wire("iar_e"), wire("ir_s"), wire(), wire("rst_ir_s")
+        ir_bus = bus(8, "ir_bus")
         jor(reset, iar_s, rst_iar_s)
         jregister.jregister(busi, rst_iar_s, iar_e, core_busE.new_bus())
         jor(reset, ir_s, rst_ir_s)
@@ -76,13 +76,17 @@ class jCORE_AVR:
 if __name__ == "__main__":
     BUS = busE(bus(8, "bus"))
 
-    clk, clkd = wire(), wire()
+    clk, clkd = map(wire, ["clk", "clkd"])
+    # jclock.jclock(clk, clkd, clke, clks)
+    # stp_bus = bus(6, "stp_bus")
+    # jstepper.jstepper(wire.RESET, clk, stp_bus)
     ram_mar_s, ram_s, ram_e = map(wire, ["ram_mar_s", "ram_s", "ram_e"]) 
+    BUS.new_bus(8, "ram_bus")
     halt, io_s, io_e, io_da, io_io = map(wire, ["halt", "io_s", "io_e", "io_da", "io_io"])
 
     jCORE_AVR(
         wire.RESET,
-        clk, clkd,
+        clk, clkd, 
         BUS.out(), BUS.new_bus(),
         ram_mar_s, ram_s, ram_e,
         io_s, io_e, io_da, io_io,

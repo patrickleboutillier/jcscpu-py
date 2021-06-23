@@ -9,7 +9,7 @@ class jCU:
         ram_mar_s, ram_s, ram_e, iar_s, iar_e, ir_s,
         halt, io_s, io_e, io_io, io_da):
 
-        inst_bus = bus()
+        inst_bus = bus(8, "inst_bus")
 
         # ALL ENABLES
         iar_ena_wor, ram_ena_wor, acc_ena_wor, bus_bit1_wor = jorE(), jorE(), jorE(), jorE(bus_bit1)
@@ -82,7 +82,7 @@ class jCU:
         idecbus = bus(8)
         jdecoderN(ir_bus[1:4], idecbus)
         for j in range(8):
-            jand (notalu, idecbus[7-j], inst_bus[j])
+            jand(notalu, idecbus[7-j], inst_bus[j])
             
         
         # Now, setting up instruction circuits involves:

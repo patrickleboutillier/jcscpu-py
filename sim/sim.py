@@ -36,7 +36,7 @@ class sim:
         
         self.setval("GND", 0)
         self.setval("VCC", 1)
-        self.setval("RESET", 1)
+        self.setval("RESET", 1)     
         self.settle()
         self.setval("RESET", 0)       
 
@@ -53,6 +53,18 @@ class sim:
             return WIRES[LABELS[label]]
         else:
             sys.exit("No wire named '{}' was found!".format(label))
+
+
+    def getbusval(self, label, len=8):
+        bs = [ str(self.getval(label + "[" + str(i) + "]")) for i in range(len) ]
+        return int("".join(bs), 2)
+
+
+    def setbusval(self, label, v, len=8):
+        f = "{0:0" + str(len) + "b}"
+        vals = f.format(v)
+        for i in range(len):
+            self.setval(label + "[" + str(i) + "]", int(vals[i]))
 
 
     def settle(self):
@@ -90,24 +102,6 @@ class test_sim(unittest.TestCase):
                 self.assertEqual(v, TESTS[id]['outs'][wl], "(" + wl + ") " + str(t))
 
 
-
-#sub setbusval {
-#	my $label = shift ;
-#	my $val = shift ;
-#	my $len = shift || 8 ;
-
-#    my @vals = split('', sprintf("%0${len}b", $val)) ;
-#    map { setval("${label}[$_]", $vals[$_]) } (0 .. ($len-1)) ;
-#}
-
-
-#sub getbusval {
-#	my $label = shift ;
-#	my $len = shift || 8 ;
-#
-#	my @bus = map { getval("${label}[$_]") } (0 .. ($len-1)) ;
-#	return oct("0b" . join('', @bus)) ;	
-#}
 
 from pprint import pprint
 if __name__ == "__main__":
