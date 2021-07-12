@@ -4,7 +4,7 @@ from modules import jand
 
 class jandder:
     def __init__(self, bas, bbs, bcs):
-        for j in range(8):
+        for j in range(len(bas)):
             jand(bas[j], bbs[j], bcs[j])
 
 

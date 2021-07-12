@@ -4,11 +4,12 @@ from modules import jand, jadd
 
 class jadder:
     def __init__(self, bas, bbs, wci, bcs, wco):
-        tc = bus(7)
-        jadd(bas[7], bbs[7], wci, bcs[7], tc[0]) 
-        for j in range(1, 7):
-            jadd(bas[7-j], bbs[7-j], tc[j-1], bcs[7-j], tc[j])
-        jadd(bas[0], bbs[0], tc[6], bcs[0], wco) 
+        lb = len(bas) - 1
+        tc = bus(lb)
+        jadd(bas[lb], bbs[lb], wci, bcs[lb], tc[0]) 
+        for j in range(1, lb):
+            jadd(bas[lb-j], bbs[lb-j], tc[j-1], bcs[lb-j], tc[j])
+        jadd(bas[0], bbs[0], tc[lb-1], bcs[0], wco) 
 
 
 if __name__ == "__main__":

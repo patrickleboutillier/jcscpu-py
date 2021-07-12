@@ -2,7 +2,7 @@ import sys
 
 WIRES = {}
 LABELS = {}
-NANDS = []
+GATES = []
 TESTS = {}
 
 
@@ -19,7 +19,10 @@ class sim:
                     LABELS[args[1]] = id
             elif verb == 'NAND':
                 [a, b, c] = args
-                NANDS.append({ 'a': int(a), 'b': int(b), 'c': int(c) })
+                GATES.append({ 'k': 'NAND', 'a': int(a), 'b': int(b), 'c': int(c) })
+            elif verb == 'TRI':
+                [i, e, o] = args
+                GATES.append({ 'k': 'TRI', 'i': int(i), 'e': int(e), 'o': int(o) })
             elif verb == 'TEST':
                 id = int(args.pop(0))
                 ins = {}
@@ -73,13 +76,22 @@ class sim:
         while change:
             iter =+ 1
             change = False
-            for n in NANDS:
-                prev = WIRES[n['c']] 
-                cur = int(not (WIRES[n['a']] & WIRES[n['b']]))
-                if cur != prev:
-                    WIRES[n['c']] = cur 
-                    change = True         
-                    # print("wire {}: {} -> {}".format(n['c'], prev, cur))
+            for g in GATES:
+                if g['k'] == 'NAND':
+                    prev = WIRES[g['c']] 
+                    cur = int(not (WIRES[g['a']] & WIRES[g['b']]))
+                    if cur != prev:
+                        WIRES[g['c']] = cur 
+                        change = True         
+                        # print("wire {}: {} -> {}".format(n['c'], prev, cur))
+                elif g['k'] == 'TRI':
+                    if WIRES[g['e']]:
+                        prev = WIRES[g['o']] 
+                        cur = WIRES[g['i']]
+                        if cur != prev:
+                            WIRES[g['o']] = cur 
+                            change = True         
+
         return iter
 
 

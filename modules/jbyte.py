@@ -4,7 +4,7 @@ from modules import jmem, jor
 
 class jbyte:
     def __init__(self, bis, ws, bos):
-        for j in range(8):
+        for j in range(len(bis)):
             jmem(bis[j], ws, bos[j])
 
 
